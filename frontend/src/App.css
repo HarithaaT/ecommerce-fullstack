@@ -1,0 +1,81 @@
+/* src/App.css */
+
+/* ✅ Keep overall font consistent */
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #fff;
+  min-height: 100vh;
+}
+
+/* ✅ Optional: add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ✅ Light shadow for cards */
+.card {
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+/* ✅ Make Auth pages (Signin/Signup) full height */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+/* ✅ Simple Navbar shadow */
+.navbar {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* ✅ Buttons rounded for consistency */
+.btn {
+  border-radius: 25px;
+}
+
+/* ✅ Optional: remove link underline globally */
+a {
+  text-decoration: none;
+}
+/* --- Modern Pagination Style --- */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 30px;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.pagination-button {
+  background: transparent;
+  border: none;
+  color: #555;
+  padding: 8px 14px;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.pagination-button:hover {
+  background: #f0f0f0;
+}
+
+.pagination-button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+}
+
+.pagination-button.disabled {
+  color: #aaa;
+  cursor: not-allowed;
+}
