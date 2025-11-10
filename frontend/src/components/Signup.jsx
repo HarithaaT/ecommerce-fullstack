@@ -52,12 +52,19 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/signup", {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        password: formData.password,
-      });
+      
+
+      const res = await axios.post(
+  "http://localhost:5000/api/auth/signup",
+  {
+    first_name: formData.firstName,
+    last_name: formData.lastName,
+    email: formData.email,
+    password: formData.password,
+  },
+  { withCredentials: true }
+);
+
 
       if (res.status === 201 || res.status === 200) {
         setMessage({

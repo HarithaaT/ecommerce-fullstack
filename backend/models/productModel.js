@@ -1,39 +1,49 @@
-// models/product.js
-export default (sequelize, DataTypes) => {
+import { DataTypes } from "sequelize";
+
+export default (sequelize) => {
   const Product = sequelize.define(
     "Product",
     {
-      id: {
+      product_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
       },
-      name: {
-        type: DataTypes.STRING(200),
+      product_name: {
+        type: DataTypes.STRING(150),
         allowNull: false,
       },
-      description: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
-      price: {
+      mrp_price: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
-        defaultValue: 0.0,
       },
-      stock: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+      discount_price: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
         defaultValue: 0,
       },
-      categoryId: {
+      category_id: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+        allowNull: true,
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
+      },
+      updated_at: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW,
       },
     },
     {
       tableName: "products",
-      timestamps: true, // adds createdAt & updatedAt
+      timestamps: false,
     }
   );
 

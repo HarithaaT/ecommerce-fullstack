@@ -1,25 +1,30 @@
 import express from "express";
-import dotenv from "dotenv"; // ✅ Use dotenv directly to load .env variables
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import db from "./config/db.js";
+import db from "./config/db.js"; // Your MySQL connection
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 import { errorHandler } from "./middlewares/errorMiddleware.js";
 
-dotenv.config(); // ✅ Initialize dotenv
+dotenv.config(); // Load .env
 
 const app = express();
 
-// ✅ Middlewares
+// ✅ Parse JSON & URL-encoded bodies
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ Parse cookies
 app.use(cookieParser());
+
+// ✅ Enable CORS for frontend
 app.use(
   cors({
-    origin: "http://localhost:3000", // ✅ frontend URL
-    credentials: true, // ✅ allow cookies & JWTs across domains
+    origin: "http://localhost:3000",
+    credentials: true,
   })
 );
 
@@ -29,11 +34,13 @@ app.use("/api/products", productRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/search", searchRoutes);
 
-// ✅ Global error handler
-app.use(errorHandler);
+// ✅ Health check route
 app.get("/", (req, res) => {
   res.send("✅ Backend server is running successfully!");
 });
+
+// ✅ Global error handler
+app.use(errorHandler);
 
 // ✅ Start server
 const PORT = process.env.PORT || 5000;

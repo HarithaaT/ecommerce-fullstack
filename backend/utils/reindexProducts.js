@@ -1,15 +1,15 @@
-// backend/utils/reindexProducts.js
-import db from "../config/db.js";
+import sequelize from "../config/db.js";
+import ProductModel from "../models/productModel.js";
 import elasticClient from "../config/elastic.js";
 
-// ✅ Function to reindex all existing products into Elasticsearch
+// Initialize Product model
+const Product = ProductModel(sequelize, sequelize.DataTypes);
+
+// ✅ Function to reindex all products into Elasticsearch
 export async function reindexAllProducts() {
   try {
-    // Fetch all products from MySQL
-    const [products] = await db.execute(`
-      SELECT product_id, product_name, category_id, quantity, mrp_price, discount_price
-      FROM products
-    `);
+    // Fetch all products using Sequelize
+    const products = await Product.findAll();
 
     if (!products.length) {
       console.log("⚠️ No products found in database to reindex.");
@@ -23,22 +23,22 @@ export async function reindexAllProducts() {
         id: product.product_id.toString(),
         document: {
           id: product.product_id,
-          name: product.product_name,
+          product_name: product.product_name,
           category_id: product.category_id,
-          quantity: product.quantity, // ✅ ensure quantity is included
+          quantity: product.quantity || 0,
           mrp_price: product.mrp_price,
           discount_price: product.discount_price,
         },
       });
     }
 
-    console.log(`✅ Reindexed ${products.length} products into Elasticsearch (with quantity)`);
+    console.log(`✅ Reindexed ${products.length} products into Elasticsearch`);
   } catch (error) {
     console.error("❌ Error during product reindexing:", error.message);
   }
 }
 
-// ✅ Run directly if executed as a standalone script
+// ✅ Run script directly
 if (process.argv[1].includes("reindexProducts.js")) {
   reindexAllProducts();
 }

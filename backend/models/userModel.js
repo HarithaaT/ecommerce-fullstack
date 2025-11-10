@@ -1,18 +1,19 @@
-// models/user.js
-export default (sequelize, DataTypes) => {
+import { DataTypes } from "sequelize";
+
+export default (sequelize) => {
   const User = sequelize.define(
     "User",
     {
-      id: {
+      user_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
       },
-      firstName: {
+      first_name: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
-      lastName: {
+      last_name: {
         type: DataTypes.STRING(100),
         allowNull: false,
       },
@@ -22,13 +23,15 @@ export default (sequelize, DataTypes) => {
         unique: true,
       },
       password: {
-        type: DataTypes.STRING(255), // store hashed password
+        type: DataTypes.STRING(255),
         allowNull: false,
       },
     },
     {
-      tableName: "users", // table name in DB
-      timestamps: true,   // adds createdAt & updatedAt
+      tableName: "users",
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
     }
   );
 

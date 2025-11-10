@@ -5,6 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "../App.css";
 
+// ✅ Ensure cookies/JWT are sent with requests
 axios.defaults.withCredentials = true;
 
 const Signin = ({ onLogin }) => {
@@ -14,7 +15,7 @@ const Signin = ({ onLogin }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ If user already logged in, go to home
+  // ✅ Redirect if already logged in
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) navigate("/home");
@@ -36,16 +37,21 @@ const Signin = ({ onLogin }) => {
 
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/signin", form);
+     const res = await axios.post(
+  "http://localhost:5000/api/auth/signin",
+  { email: form.email, password: form.password },
+  { withCredentials: true }
+);
+
 
       if (res.status === 200 && res.data.token) {
         const { token, user } = res.data;
 
-        // ✅ Save token + user to localStorage
+        // ✅ Save token and user locally
         localStorage.setItem("token", token);
         localStorage.setItem("user", JSON.stringify(user));
 
-        // ✅ Inform parent (App.js) about successful login
+        // ✅ Notify parent
         if (onLogin) onLogin(token, user);
 
         // ✅ Feedback + redirect
@@ -62,79 +68,75 @@ const Signin = ({ onLogin }) => {
     }
   };
 
-
-
   return (
-    <>
-      <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
-        <div className="card shadow-sm p-4" style={{ width: "400px" }}>
-          <h4 className="text-center mb-2 fw-semibold">Welcome Back</h4>
-          <p className="text-center text-muted mb-3">
-            Please enter your credentials to sign in.
-          </p>
+    <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
+      <div className="card shadow-sm p-4" style={{ width: "400px" }}>
+        <h4 className="text-center mb-2 fw-semibold">Welcome Back</h4>
+        <p className="text-center text-muted mb-3">
+          Please enter your credentials to sign in.
+        </p>
 
-          {error && (
-            <div
-              className={`alert ${
-                error.includes("❌") || error.includes("⚠️")
-                  ? "alert-danger"
-                  : "alert-success"
-              } py-2`}
-            >
-              {error}
-            </div>
-          )}
+        {error && (
+          <div
+            className={`alert ${
+              error.includes("❌") || error.includes("⚠️")
+                ? "alert-danger"
+                : "alert-success"
+            } py-2`}
+          >
+            {error}
+          </div>
+        )}
 
-          <form onSubmit={handleSignin}>
-            {/* Email */}
+        <form onSubmit={handleSignin}>
+          {/* Email */}
+          <input
+            type="email"
+            name="email"
+            placeholder="example@mail.com"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="form-control mb-3"
+          />
+
+          {/* Password with toggle */}
+          <div className="mb-3 position-relative">
             <input
-              type="email"
-              name="email"
-              placeholder="example@mail.com"
-              value={form.email}
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              value={form.password}
               onChange={handleChange}
               required
-              className="form-control mb-3"
+              className="form-control pe-5"
             />
+            <i
+              className={`bi ${
+                showPassword ? "bi-eye-slash" : "bi-eye"
+              } position-absolute end-0 top-50 translate-middle-y me-3`}
+              style={{ cursor: "pointer", fontSize: "1.2rem" }}
+              onClick={() => setShowPassword(!showPassword)}
+            ></i>
+          </div>
 
-            {/* Password + eye toggle */}
-            <div className="mb-3 position-relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                className="form-control pe-5"
-              />
-              <i
-                className={`bi ${
-                  showPassword ? "bi-eye-slash" : "bi-eye"
-                } position-absolute end-0 top-50 translate-middle-y me-3`}
-                style={{ cursor: "pointer", fontSize: "1.2rem" }}
-                onClick={() => setShowPassword(!showPassword)}
-              ></i>
-            </div>
+          <button
+            type="submit"
+            className="btn btn-primary w-100 mb-3"
+            disabled={loading}
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+        </form>
 
-            <button
-              type="submit"
-              className="btn btn-primary w-100 mb-3"
-              disabled={loading}
-            >
-              {loading ? "Signing In..." : "Sign In"}
-            </button>
-          </form>
-
-          <p className="text-center mb-0">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="text-decoration-none fw-semibold">
-              Sign Up
-            </Link>
-          </p>
-        </div>
+        <p className="text-center mb-0">
+          Don’t have an account?{" "}
+          <Link to="/signup" className="text-decoration-none fw-semibold">
+            Sign Up
+          </Link>
+        </p>
       </div>
-    </>
+    </div>
   );
 };
 

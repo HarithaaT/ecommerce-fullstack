@@ -1,17 +1,20 @@
-# Use Node 20 as base image
-FROM node:20
+# Use official Node.js 20 LTS Alpine image (smaller size)
+FROM node:20-alpine
 
 # Set working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy files
+# Copy package.json and package-lock.json
 COPY package*.json ./
+
+# Install dependencies
 RUN npm install
 
+# Copy all backend files
 COPY . .
 
-# Expose port (adjust if your backend uses another)
+# Expose backend port
 EXPOSE 5000
 
-# Start the server
-CMD ["npm", "start"]
+# Start server in development mode (with nodemon if available)
+CMD ["npm", "run", "dev"]

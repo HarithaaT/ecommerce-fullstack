@@ -1,1 +1,11 @@
-*.zip
+# Node modules
+node_modules/
+
+# Logs
+*.log
+
+# Environment variables
+*.env
+
+# Optional: SQL backup
+*.sql

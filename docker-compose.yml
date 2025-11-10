@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   mysql:
     image: mysql:8
@@ -10,6 +8,11 @@ services:
       MYSQL_DATABASE: ecommerce
     ports:
       - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -21,8 +24,13 @@ services:
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     volumes:
-      - es_data:/usr/share/elasticsearch/data # Persist Elasticsearch indices
+      - es_data:/usr/share/elasticsearch/data
 
   backend:
     build: ./backend
@@ -30,16 +38,24 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - mysql
-      - elasticsearch
+      mysql:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
     environment:
       - DB_HOST=mysql
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=ecommerce
-      - ELASTIC_HOST=http://elastic-container:9200
+      - DB_PORT=3306
+      - JWT_SECRET=R00t!9632@Secure
+      - JWT_EXPIRES_IN=7d
+      - COOKIE_NAME=token
+      - ELASTIC_URL=http://elasticsearch:9200
     volumes:
       - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
 
   frontend:
     build: ./frontend
@@ -50,6 +66,10 @@ services:
       - backend
     volumes:
       - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npm start
 
 volumes:
   mysql_data:

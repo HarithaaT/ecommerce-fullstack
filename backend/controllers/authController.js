@@ -3,32 +3,42 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import db from "../config/db.js";
+import UserModel from "../models/userModel.js";
 
 dotenv.config();
+
+// ✅ Initialize User model (just pass the sequelize instance)
+const User = UserModel(db);
 
 /**
  * ✅ SIGNUP Controller
  */
 export const signup = async (req, res) => {
-  const { first_name, last_name, email, password } = req.body;
-
   try {
+    const first_name = req.body.first_name || req.body.firstName;
+    const last_name = req.body.last_name || req.body.lastName;
+    const email = req.body.email || req.body.Email;
+    const password = req.body.password || req.body.Password;
+
     if (!first_name || !last_name || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const [existingUser] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-    if (existingUser.length > 0) {
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
-    await db.query(
-      "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)",
-      [first_name, last_name, email, hashed]
-    );
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    res.status(201).json({ message: "User registered successfully" });
+    const newUser = await User.create({
+      first_name,
+      last_name,
+      email,
+      password: hashedPassword,
+    });
+
+    res.status(201).json({ message: "User registered successfully", user: newUser });
   } catch (err) {
     console.error("❌ Signup error:", err);
     res.status(500).json({ message: "Server error" });
@@ -36,39 +46,36 @@ export const signup = async (req, res) => {
 };
 
 /**
- * ✅ SIGNIN Controller (Fixed to include token + user info)
+ * ✅ SIGNIN Controller
  */
 export const signin = async (req, res) => {
-  const { email, password } = req.body;
-
   try {
+    const email = req.body.email || req.body.Email;
+    const password = req.body.password || req.body.Password;
+
     if (!email || !password) {
       return res.status(400).json({ message: "Email and password are required" });
     }
 
-    const [users] = await db.query("SELECT * FROM users WHERE email = ?", [email]);
-    const user = users[0];
+    const user = await User.findOne({ where: { email } });
     if (!user) return res.status(401).json({ message: "Invalid email or password" });
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ message: "Invalid email or password" });
 
-    // ✅ Generate JWT token
     const token = jwt.sign(
       { userId: user.user_id, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
-    // ✅ Set token in cookie
     res.cookie(process.env.COOKIE_NAME || "token", token, {
       httpOnly: true,
-      secure: false, // set true for HTTPS
+      secure: false,
       sameSite: "Lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    // ✅ Send both token and user object in response (frontend expects this)
     return res.status(200).json({
       message: "Login successful",
       token,
@@ -94,12 +101,11 @@ export const logout = (req, res) => {
     sameSite: "Lax",
     secure: false,
   });
-
   res.status(200).json({ message: "Logged out successfully" });
 };
 
 /**
- * ✅ CHECK AUTH Controller — verify if user has valid cookie token
+ * ✅ CHECK AUTH Controller
  */
 export const checkAuth = (req, res) => {
   try {
@@ -109,7 +115,10 @@ export const checkAuth = (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     return res.status(200).json({
       authenticated: true,
-      user: decoded,
+      user: {
+        id: decoded.userId,
+        email: decoded.email,
+      },
     });
   } catch (err) {
     return res.status(403).json({ authenticated: false, message: "Invalid or expired token" });
