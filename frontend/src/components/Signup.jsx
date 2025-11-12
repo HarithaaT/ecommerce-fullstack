@@ -97,7 +97,7 @@ const Signup = () => {
       {/* ✅ Signup Form Card */}
       <div className="container-fluid d-flex justify-content-center align-items-center min-vh-100 bg-white">
         <div
-          className="card shadow-lg p-5 bg-white rounded-4"
+          className="card shadow p-5 bg-white rounded-4"
           style={{ width: "500px", minHeight: "550px" }}
         >
           <h4 className="text-center mb-2 fw-semibold">Create an Account</h4>

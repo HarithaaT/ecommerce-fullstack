@@ -70,7 +70,7 @@ const Signin = ({ onLogin }) => {
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100 bg-white">
-      <div className="card shadow-sm p-4" style={{ width: "400px" }}>
+      <div className="card shadow p-4" style={{ width: "400px" }}>
         <h4 className="text-center mb-2 fw-semibold">Welcome Back</h4>
         <p className="text-center text-muted mb-3">
           Please enter your credentials to sign in.
