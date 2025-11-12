@@ -40,7 +40,7 @@ export const getAllProducts = async (req, res) => {
 
 // Get products by category with pagination
 export const getProductsByCategory = async (req, res) => {
-  const { categoryId } = req.params;
+  const  categoryId  = req.params.id;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 12;
   const offset = (page - 1) * limit;

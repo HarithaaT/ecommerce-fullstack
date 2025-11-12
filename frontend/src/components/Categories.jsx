@@ -30,19 +30,25 @@ function Categories() {
     fetchCategories(page);
   }, [page]);
 
-  // ✅ Fetch products under selected category
-  const fetchProductsByCategory = async (categoryId) => {
+// ✅ Fetch products under selected category
+const fetchProductsByCategory = async (categoryId) => {
+  try {
     setLoading(true);
-    try {
-      const res = await axios.get(`http://localhost:5000/api/products/category/${categoryId}`);
-      setProducts(res.data || []);
-      setSelectedCategory(categoryId);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+    // ✅ Include pagination params — safer for backend consistency
+    const res = await axios.get(
+      `http://localhost:5000/api/products/category/${categoryId}?page=1&limit=12`
+    );
+
+    // ✅ Fix: backend returns { products: [...] }
+    setProducts(res.data.products || []);
+    setSelectedCategory(categoryId);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="container mt-5 pt-5">

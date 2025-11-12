@@ -22,20 +22,10 @@ export default (sequelize) => {
         allowNull: true,
         defaultValue: DataTypes.NOW,
       },
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW,
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW,
-      },
     },
     {
       tableName: "categories",
-      timestamps: false,
+      timestamps: false, // ✅ removed created_at and updated_at
     }
   );
 

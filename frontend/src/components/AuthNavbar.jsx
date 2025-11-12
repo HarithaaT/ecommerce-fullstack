@@ -20,13 +20,14 @@ function AuthNavbar() {
     >
       <div className="container">
         {/* ✅ Website Name + Icon */}
-        <Link
-          className="navbar-brand fw-bold fs-4 text-dark d-flex align-items-center"
-          to="/"
-        >
-          <i className="bi bi-bag-check-fill me-2 text-primary"></i>
-          MyEcomSite
-        </Link>
+       <span
+  className="navbar-brand fw-bold fs-4 text-dark d-flex align-items-center"
+  style={{ cursor: "default" }}
+>
+  <i className="bi bi-bag-check-fill me-2 text-primary"></i>
+  ShopEase
+</span>
+
 
         {/* ✅ Mobile Toggle Button */}
         <button

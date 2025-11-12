@@ -40,21 +40,24 @@ function Home() {
     fetchCategories();
   }, [fetchCategories]);
 
-  // ✅ Fetch products by category
-  const fetchProductsByCategory = async (categoryId) => {
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `http://localhost:5000/api/products/category/${categoryId}`
-      );
-      setProducts(res.data || []);
-      setSelectedCategory(categoryId);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+ // ✅ Fetch products by category
+const fetchProductsByCategory = async (categoryId) => {
+  try {
+    setLoading(true);
+    const res = await axios.get(
+      `http://localhost:5000/api/products/category/${categoryId}?page=1&limit=12`
+    );
+
+    // ✅ Fix: use res.data.products (since backend returns { products: [...] })
+    setProducts(res.data.products || []);
+    setSelectedCategory(categoryId);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // ✅ Pagination handler
   const handlePageChange = (page) => {
@@ -81,7 +84,7 @@ function Home() {
       <div className="container my-5 pt-5">
         <div className="mb-4 text-center">
           <h2>
-            Welcome{user?.firstName ? `, ${user.firstName}` : ""} 👋
+            Welcome{user?.firstName ? ` ${user.firstName}` : ""} 
           </h2>
           <p className="text-muted">
             Browse your favorite categories or search for products below.

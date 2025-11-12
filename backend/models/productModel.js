@@ -30,20 +30,10 @@ export default (sequelize) => {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
       },
-      created_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW,
-      },
-      updated_at: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW,
-      },
     },
     {
       tableName: "products",
-      timestamps: false,
+      timestamps: false, // ✅ removed created_at and updated_at
     }
   );
 

@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/all", getAllProducts);
 
 // ✅ Get products by category (public route)
-router.get("/category/:categoryId", getProductsByCategory);
+router.get("/category/:id", getProductsByCategory);
 
 // ✅ Create product (protected route)
 router.post("/", verifyToken, createProduct);

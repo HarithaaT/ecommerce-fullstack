@@ -71,13 +71,14 @@ function MainNavbar({
     <nav className="navbar navbar-expand-lg navbar-light bg-white fixed-top shadow-sm">
       <div className="container">
         {/* Brand */}
-        <Link
-          className="navbar-brand fw-bold fs-4 d-flex align-items-center text-dark"
-          to="/home"
-        >
-          <i className="bi bi-bag-check-fill me-2 text-primary"></i>
-          ShopEase
-        </Link>
+        <span
+  className="navbar-brand fw-bold fs-4 d-flex align-items-center text-dark"
+  style={{ cursor: "default" }}
+>
+  <i className="bi bi-bag-check-fill me-2 text-primary"></i>
+  ShopEase
+</span>
+
 
         {/* Toggle */}
         <button
