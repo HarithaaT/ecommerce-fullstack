@@ -29,7 +29,7 @@ export default (sequelize) => {
     },
     {
       tableName: "users",
-      timestamps: false, // ✅ removed created_at and updated_at
+      timestamps: false, 
     }
   );
 

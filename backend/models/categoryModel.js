@@ -5,7 +5,7 @@ export default (sequelize) => {
     "Category",
     {
       category_id: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true,
       },
@@ -25,7 +25,7 @@ export default (sequelize) => {
     },
     {
       tableName: "categories",
-      timestamps: false, // ✅ removed created_at and updated_at
+      timestamps: false, 
     }
   );
 
