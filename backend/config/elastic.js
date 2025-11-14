@@ -15,14 +15,31 @@ const elasticClient = new Client({
     console.log("✅ Connected to Elasticsearch");
 
     const indexName = process.env.ELASTIC_INDEX || "products_index";
+
+    // check index exists
     const exists = await elasticClient.indices.exists({ index: indexName });
 
+    // ⭐ Create index with mapping if it does not exist
     if (!exists) {
-      await elasticClient.indices.create({ index: indexName });
-      console.log(`✅ Elasticsearch index created: ${indexName}`);
+      await elasticClient.indices.create({
+        index: indexName,
+        mappings: {
+          properties: {
+            product_name: { type: "text" },
+            category_name: { type: "text" },   // ⭐ IMPORTANT for category search
+            mrp_price: { type: "float" },
+            discount_price: { type: "float" },
+            quantity: { type: "integer" },
+            category_id: { type: "integer" }
+          }
+        }
+      });
+
+      console.log(`✅ Elasticsearch index created with mapping: ${indexName}`);
     } else {
-      console.log(`✅ Elasticsearch index exists: ${indexName}`);
+      console.log(`✅ Elasticsearch index already exists: ${indexName}`);
     }
+
   } catch (error) {
     console.error("❌ Elasticsearch connection failed:", error.message);
   }

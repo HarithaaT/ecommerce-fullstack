@@ -7,8 +7,6 @@ import axios from "axios";
 function MainNavbar({
   auth,
   user,
-  searchType,
-  setSearchType,
   query,
   setQuery,
   setProducts,
@@ -16,11 +14,10 @@ function MainNavbar({
   setSelectedCategory,
   setLoading,
   categories,
-  onLogout, // from App.js
+  onLogout,
 }) {
   const navigate = useNavigate();
 
-  // ✅ Logout handler
   const handleLogout = async () => {
     try {
       await axios.post(
@@ -37,7 +34,7 @@ function MainNavbar({
     }
   };
 
-  // ✅ Search handler (unchanged logic)
+  // AUTO MODE SEARCH (SHORT = SIMPLE, LONG = ELASTIC)
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!query.trim()) {
@@ -48,16 +45,20 @@ function MainNavbar({
 
     try {
       setLoading(true);
-      const endpoint =
-        searchType === "elastic"
-          ? `http://localhost:5000/api/search/elastic?q=${encodeURIComponent(
+
+      let mode = query.length <= 2 ? "simple" : "elastic";
+
+      let endpoint =
+        mode === "simple"
+          ? `http://localhost:5000/api/search/simple?q=${encodeURIComponent(
               query
             )}`
-          : `http://localhost:5000/api/search/simple?q=${encodeURIComponent(
+          : `http://localhost:5000/api/search/elastic?q=${encodeURIComponent(
               query
             )}`;
 
       const res = await axios.get(endpoint);
+
       setProducts(res.data.results || []);
       setSelectedCategory(null);
     } catch (error) {
@@ -72,13 +73,12 @@ function MainNavbar({
       <div className="container">
         {/* Brand */}
         <span
-  className="navbar-brand fw-bold fs-4 d-flex align-items-center text-dark"
-  style={{ cursor: "default" }}
->
-  <i className="bi bi-bag-check-fill me-2 text-primary"></i>
-  ShopEase
-</span>
-
+          className="navbar-brand fw-bold fs-4 d-flex align-items-center text-dark"
+          style={{ cursor: "default" }}
+        >
+          <i className="bi bi-bag-check-fill me-2 text-primary"></i>
+          ShopEase
+        </span>
 
         {/* Toggle */}
         <button
@@ -86,9 +86,6 @@ function MainNavbar({
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -102,29 +99,25 @@ function MainNavbar({
                 Home
               </Link>
             </li>
+
             <li className="nav-item">
               <Link className="nav-link text-dark" to="/products">
                 All Products
               </Link>
             </li>
-            
           </ul>
 
-          {/* ✅ Search box (clean, functional, aligned) */}
+          {/* Search Bar */}
           <form
             className="d-flex align-items-center ms-3 my-2 my-lg-0"
             onSubmit={handleSearch}
-            style={{
-              flexGrow: 1,
-              maxWidth: "400px",
-              minWidth: "280px",
-            }}
+            style={{ flexGrow: 1, maxWidth: "400px", minWidth: "280px" }}
           >
             <div className="input-group w-100">
               <input
                 type="text"
                 className="form-control border-end-0"
-                placeholder={`Search (${searchType})`}
+                placeholder="Search products..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 style={{
@@ -134,19 +127,7 @@ function MainNavbar({
                 }}
                 required
               />
-              <select
-                className="form-select border-start-0 border-end-0 bg-light"
-                value={searchType}
-                onChange={(e) => setSearchType(e.target.value)}
-                style={{
-                  maxWidth: "110px",
-                  fontSize: "0.85rem",
-                  backgroundColor: "#f8f9fa",
-                }}
-              >
-                <option value="simple">Simple</option>
-                <option value="elastic">Elastic</option>
-              </select>
+
               <button
                 className="btn btn-primary"
                 type="submit"
@@ -160,7 +141,7 @@ function MainNavbar({
             </div>
           </form>
 
-          {/* ✅ Auth section */}
+          {/* Auth Section */}
           <ul className="navbar-nav ms-auto align-items-center">
             {auth ? (
               <li className="nav-item dropdown">
@@ -169,11 +150,11 @@ function MainNavbar({
                   id="accountDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
-                  aria-expanded="false"
                   style={{ cursor: "pointer" }}
                 >
-                  {user ? `Hi, ${user.firstName || user.name || "User"}` : "Account"}
+                  {user ? `Hi, ${user.firstName || "User"}` : "Account"}
                 </span>
+
                 <ul
                   className="dropdown-menu dropdown-menu-end"
                   aria-labelledby="accountDropdown"
